@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🚆 Railway Reservation</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: linear-gradient(135deg, #2a5298, #1e3c72);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .card {
+      background: rgba(13, 27, 42, 0.9);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      width: 400px;
+      max-height: 95vh;
+      overflow-y: auto;
+      text-align: center;
+    }
+
+    h1 {
+      color: #ffcc00;
+      font-size: 24px;
+      margin-bottom: 25px;
+      letter-spacing: 1px;
+      position: sticky;
+      top: 0;
+      background: rgba(13, 27, 42, 0.95);
+      padding: 10px 0;
+      z-index: 2;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin: 12px 0 5px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 15px;
+      font-size: 15px;
+      background: #f4f4f4;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      box-shadow: 0 0 5px #ffcc00;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    button:hover { transform: scale(1.05); }
+
+    .btn-book { background: linear-gradient(135deg, #28a745, #218838); color: white; }
+    .btn-cancel { background: linear-gradient(135deg, #dc3545, #b02a37); color: white; }
+    .btn-reset { background: linear-gradient(135deg, #007bff, #0056b3); color: white; }
+    .btn-print { background: linear-gradient(135deg, #ff8800, #ff5500); color: white; }
+
+    .ticket, .pnrResult {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      background: rgba(22, 36, 71, 0.9);
+      text-align: left;
+      display: none;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .price {
+      margin: 10px 0;
+      font-size: 18px;
+      font-weight: bold;
+      color: #ffcc00;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🚆 Railway Reservation</h1>
+
+    <form id="bookForm">
+      <label for="trainNumber">Choose a Train:</label>
+      <select id="trainNumber" required></select>
+
+      <label for="passenger">Passenger Name:</label>
+      <input id="passenger" placeholder="Enter Name" required>
+
+      <label for="date">Select Date:</label>
+      <input id="date" type="date" required>
+
+      <label for="seatClass">Class:</label>
+      <select id="seatClass">
+        <option value="SL">Sleeper (SL)</option>
+        <option value="3AC">Third AC (3AC)</option>
+        <option value="2AC">Two Tier AC (2AC)</option>
+      </select>
+
+      <div class="price">💰 Price: ₹<span id="price">0</span></div>
+
+      <button type="submit" class="btn-book">✓ Book Seat</button>
+      <button type="button" class="btn-cancel" onclick="cancelBooking()">✘ Cancel Booking</button>
+      <button type="reset" class="btn-reset">🔄 Reset</button>
+    </form>
+
+    <div id="ticket" class="ticket"></div>
+
+    <label for="pnr" style="margin-top:15px;">🔎 PNR Services:</label>
+    <input id="pnr" placeholder="Enter PNR">
+    <button type="button" class="btn-reset" onclick="findBooking()">Find Booking</button>
+    <div id="pnrResult" class="pnrResult"></div>
+  </div>
+
+<script>
+async function loadTrains() {
+  let res = await fetch('/api/trains');
+  let trains = await res.json();
+  let select = document.getElementById('trainNumber');
+  select.innerHTML = '<option value="">Select Train</option>';
+  trains.forEach(t => {
+    select.innerHTML += `<option value="${t.number}">${t.name} (${t.number}) ${t.source} → ${t.destination}</option>`;
+  });
+
+  document.getElementById('seatClass').onchange = () => updatePrice(trains);
+  document.getElementById('trainNumber').onchange = () => updatePrice(trains);
+}
+
+function updatePrice(trains){
+  let trainNum = document.getElementById('trainNumber').value;
+  let cls = document.getElementById('seatClass').value;
+  let train = trains.find(t => t.number == trainNum);
+  document.getElementById('price').textContent = train ? train.fares[cls] : 0;
+}
+
+document.getElementById('bookForm').onsubmit = async e => {
+  e.preventDefault();
+  let body = {
+    trainNumber: document.getElementById('trainNumber').value,
+    passenger: document.getElementById('passenger').value,
+    date: document.getElementById('date').value,
+    seatClass: document.getElementById('seatClass').value
+  };
+  let res = await fetch('/api/book',{method:'POST',body:JSON.stringify(body)});
+  let b = await res.json();
+
+  let ticketDiv = document.getElementById('ticket');
+  ticketDiv.style.display='block';
+  ticketDiv.innerHTML=`<h3>🎫 Ticket Booked!</h3>
+    <b>PNR:</b> ${b.pnr}<br>
+    <b>Train:</b> ${b.train.name} (${b.train.number})<br>
+    <b>Route:</b> ${b.train.source} → ${b.train.destination}<br>
+    <b>Date:</b> ${b.date} | <b>Class:</b> ${b.seatClass}<br>
+    <b>Passenger:</b> ${b.passenger}<br>
+    <b>Fare:</b> ₹${b.fare}<br>
+    <button class="btn-print" onclick='downloadPDF(${JSON.stringify(b).replace(/"/g,"&quot;")})'>⬇ Download Ticket (PDF)</button>`;
+
+  window.scrollTo({top:0, behavior:'smooth'});
+  loadTrains();
+};
+
+async function findBooking(){
+  let pnr=document.getElementById('pnr').value;
+  let res=await fetch('/api/booking/'+pnr);
+  if(res.status==404){alert("Not Found");return;}
+  let b=await res.json();
+  let resultDiv=document.getElementById('pnrResult');
+  resultDiv.style.display='block';
+  resultDiv.innerHTML=`<h3>📄 Booking Details</h3>
+    <b>PNR:</b> ${b.pnr}<br>
+    <b>Passenger:</b> ${b.passenger}<br>
+    <b>Train:</b> ${b.train.name} (${b.train.number})<br>
+    <b>Route:</b> ${b.train.source} → ${b.train.destination}<br>
+    <b>Date:</b> ${b.date} | <b>Class:</b> ${b.seatClass}<br>
+    <b>Fare:</b> ₹${b.fare}`;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+async function cancelBooking(){
+  let pnr=document.getElementById('pnr').value;
+  let res=await fetch('/api/cancel/'+pnr,{method:'DELETE'});
+  if(res.status==404){alert("Not Found");return;}
+  let msg=await res.json();
+  alert("❌ Booking Cancelled for "+msg.pnr);
+  window.scrollTo({top:0, behavior:'smooth'});
+  loadTrains();
+}
+
+function downloadPDF(b){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Draw card background
+  doc.setFillColor(22, 36, 71); 
+  doc.roundedRect(10, 10, 190, 100, 5, 5, "F");
+
+  // Title
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.text("📄 Booking Details", 20, 20);
+
+  // Labels
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "bold");
+  doc.text("PNR:", 20, 35);
+  doc.text("Passenger:", 20, 45);
+  doc.text("Train:", 20, 55);
+  doc.text("Route:", 20, 65);
+  doc.text("Date:", 20, 75);
+  doc.text("Class:", 110, 75);
+  doc.text("Fare:", 20, 85);
+
+  // Values
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(255, 255, 255);
+  doc.text(b.pnr, 60, 35);
+  doc.text(b.passenger, 60, 45);
+  doc.text(`${b.train.name} (${b.train.number})`, 60, 55);
+  doc.text(`${b.train.source} → ${b.train.destination}`, 60, 65);
+  doc.text(b.date, 60, 75);
+  doc.text(b.seatClass, 130, 75);
+
+  // Fare in yellow
+  doc.setTextColor(255, 204, 0); 
+  doc.text(`₹${b.fare}`, 60, 85);
+
+  // Save file
+  doc.save(`Ticket_${b.pnr}.pdf`);
+}
+
+loadTrains();
+</script>
+</body>
+</html>

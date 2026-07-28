@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ODI Player Performance Prediction</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body style="background: url('/static/viratkohli1.jpg') no-repeat center center fixed; background-size: cover;">
+    <div class="container">
+        <div class="header">
+            <h1>ODI Player Performance Prediction 🏏</h1>
+            <a href="/compare" class="nav-button">Go to Player vs. Player Mode ⚔️</a>
+        </div>
+        
+        <p>Select a player type, then enter their stats to predict their skill level.</p>
+        
+        <form id="prediction-form">
+            <div class="form-group">
+                <label for="player-type">Select Player Type:</label>
+                <select id="player-type" name="player_type">
+                    <option value="select">-- Please choose an option --</option>
+                    <option value="All-Rounder">All-Rounder</option>
+                    <option value="Batsman">Batsman</option>
+                    <option value="Bowler">Bowler</option>
+                    <option value="Fielder">Fielder</option> 
+                </select>
+            </div>
+
+            <div id="batting-stats" class="stats-group hidden">
+                <h3>Batting Stats</h3>
+                <div class="form-grid">
+                    <input type="number" name="Matches" id="Matches" placeholder="Matches Played">
+                    <input type="number" name="Batting_Innings" id="Batting_Innings" placeholder="Innings Batted">
+                    <input type="number" name="Not_Outs" id="Not_Outs" placeholder="Not Outs">
+                    <input type="number" name="Runs_Scored" id="Runs_Scored" placeholder="Total Runs Scored">
+                    <input type="number" name="Batting_Average" id="Batting_Average" placeholder="Batting Average" step="0.01">
+                    <input type="number" name="100" placeholder="Number of Centuries" min="0">
+                    <input type="number" name="50" placeholder="Number of Fifties" min="0">
+                    <input type="number" name="0" placeholder="Number of Ducks (0 runs)" min="0">
+                    <div class="slider-group">
+                        <label>Batting Strike Rate</label>
+                        <div class="slider-container">
+                            <input type="range" id="Strike_Rate_slider" min="30" max="250" value="100" step="0.1">
+                            <input type="number" name="Strike_Rate" id="Strike_Rate_input" min="30" max="250" value="100" step="0.01">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="bowling-stats" class="stats-group hidden">
+                <h3>Bowling Stats</h3>
+                <div class="form-grid">
+                    <input type="number" name="Wickets_Taken" id="Wickets_Taken" placeholder="Total Wickets Taken">
+                    <input type="number" name="Runs_Conceded" id="Runs_Conceded" placeholder="Runs Conceded">
+                    <input type="number" name="Balls_Bowled" id="Balls_Bowled" placeholder="Balls Bowled">
+                    <input type="number" name="Bowling_Average" id="Bowling_Average" placeholder="Bowling Average" step="0.01">
+                    <input type="number" name="Economy" id="Economy" placeholder="Bowling Economy" step="0.01">
+                </div>
+            </div>
+
+            <div id="fielding-stats" class="stats-group hidden">
+                <h3>Fielding Stats</h3>
+                <div class="form-grid">
+                    <input type="number" name="Dismissals" id="Dismissals" placeholder="Total Dismissals">
+                    <input type="number" name="Catches" id="Catches" placeholder="Catches Taken">
+                    <input type="number" name="Stumpings" id="Stumpings" placeholder="Stumpings">
+                </div>
+            </div>
+            
+            <button type="submit">Predict Player Category</button>
+        </form>
+
+        </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

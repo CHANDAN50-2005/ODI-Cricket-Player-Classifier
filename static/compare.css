@@ -1,0 +1,21 @@
+body {
+	background: #f4f6fa url('/static/your-background.jpg') no-repeat center center fixed;
+	background-size: cover;
+	font-family: 'Segoe UI', Arial, sans-serif;
+}
+.container { max-width: 900px; margin: 40px auto; background: rgba(255,255,255,0.65); border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); padding: 32px; }
+h1 { text-align: center; color: #1a237e; margin-bottom: 24px; }
+.player-section { background: #e3f2fd; border-radius: 12px; padding: 18px 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(30,64,175,0.07); }
+h2 { color: #1976d2; margin-bottom: 12px; }
+input[type=number], select { width: 180px; margin: 6px 8px 12px 0; padding: 8px; border-radius: 6px; border: 1px solid #bdbdbd; font-size: 1rem; }
+button[type=submit] { background: #ff9800; color: #fff; border: none; border-radius: 8px; padding: 12px 32px; font-size: 1.1rem; cursor: pointer; margin: 18px 0; transition: background 0.2s; }
+button[type=submit]:hover { background: #f57c00; }
+#comparisonResult { margin-top: 32px; }
+#player1Result, #player2Result { background: #f5f5f5; border-radius: 8px; padding: 16px; margin-bottom: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+canvas { background: #fff; border-radius: 8px; margin-top: 18px; }
+a { display: block; text-align: center; margin-top: 24px; color: #1976d2; text-decoration: none; font-weight: 500; }
+a:hover { text-decoration: underline; }
+.summary-table { width: 100%; border-collapse: collapse; margin-top: 18px; }
+.summary-table th, .summary-table td { border: 1px solid #bdbdbd; padding: 8px 12px; text-align: center; }
+.summary-table th { background: #e3f2fd; color: #1976d2; }
+.winner { background: #ffe082; font-weight: bold; }

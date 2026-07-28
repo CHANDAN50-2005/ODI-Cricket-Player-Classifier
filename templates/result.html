@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result - Cricket Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Prediction Result</h1>
+
+        <div class="result-display">
+            <h2 id="prediction-category">Analyzing Player...</h2>
+        </div>
+
+        <div class="chart-container">
+            <h3>Prediction Probabilities</h3>
+            <canvas id="probabilitiesChart"></canvas>
+        </div>
+
+        <a href="/" class="back-button">Analyze Another Player</a>
+    </div>
+
+    <script src="/static/result.js"></script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Player vs Player Comparison</title>
+    <link rel="stylesheet" href="/static/compare.css">
+    <style>
+    .result-cards {
+        display: flex;
+        gap: 32px;
+        justify-content: center;
+        margin: 32px 0 16px 0;
+    }
+    .player-card {
+        background: #f8f9fa;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        padding: 24px 32px;
+        min-width: 260px;
+        transition: box-shadow 0.3s;
+        font-size: 1.1em;
+        position: relative;
+    }
+    .player-card.winner {
+        border: 2px solid #2ecc40;
+        box-shadow: 0 4px 16px rgba(46,204,64,0.15);
+    }
+    .player-card.tie {
+        border: 2px solid #f1c40f;
+        box-shadow: 0 4px 16px rgba(241,196,15,0.15);
+    }
+    .result-title {
+        color: #1a237e;
+        font-size: 2em;
+        margin-bottom: 16px;
+        text-align: left;
+    }
+    .winner-banner {
+        text-align: center;
+        font-size: 1.3em;
+        font-weight: bold;
+        margin: 18px 0 0 0;
+        padding: 10px 0;
+        border-radius: 8px;
+        background: linear-gradient(90deg,#2ecc40 0%,#f1c40f 100%);
+        color: #fff;
+        letter-spacing: 1px;
+        box-shadow: 0 2px 8px rgba(46,204,64,0.12);
+    }
+    .chart-container {
+        margin: 32px auto 0 auto;
+        max-width: 650px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        padding: 16px;
+    }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body style="background: url('/static/viratkohli1.jpg') no-repeat center center fixed; background-size: cover;">
+    <div class="container">
+        <h1>Player vs Player Comparison 🆚</h1>
+        <form id="compareForm">
+            <div class="player-section">
+                <h2>Player 1</h2>
+                <select name="PlayerType1" id="PlayerType1" required>
+                    <option value="Batsman">Batsman</option>
+                    <option value="Bowler">Bowler</option>
+                    <option value="All-Rounder">All-Rounder</option>
+                    <option value="Fielder">Fielder</option>
+                </select>
+                <div class="player-fields" id="Player1Fields">
+                    <!-- Fields will be rendered by JS -->
+                </div>
+            </div>
+            <div class="player-section">
+                <h2>Player 2</h2>
+                <select name="PlayerType2" id="PlayerType2" required>
+                    <option value="Batsman">Batsman</option>
+                    <option value="Bowler">Bowler</option>
+                    <option value="All-Rounder">All-Rounder</option>
+                    <option value="Fielder">Fielder</option>
+                </select>
+                <div class="player-fields" id="Player2Fields">
+                    <!-- Fields will be rendered by JS -->
+                </div>
+            </div>
+            <script>
+            // Field definitions for each type
+            const playerFields = {
+                'Batsman': [
+                    {name: 'Matches1', label: 'Matches Played', required: true},
+                    {name: 'Batting_Innings1', label: 'Innings Batted'},
+                    {name: 'Not_Outs1', label: 'Not Outs'},
+                    {name: 'Runs_Scored1', label: 'Total Runs Scored'},
+                    {name: 'Batting_Average1', label: 'Batting Average'},
+                    {name: 'Strike_Rate1', label: 'Batting Strike Rate'},
+                    {name: '100_1', label: 'Number of Centuries'},
+                    {name: '50_1', label: 'Number of Fifties'}
+                ],
+                'Bowler': [
+                    {name: 'Matches1', label: 'Matches Played', required: true},
+                    {name: 'Wickets_Taken1', label: 'Wickets Taken'},
+                    {name: 'Bowling_Average1', label: 'Bowling Average'},
+                    {name: 'Economy1', label: 'Bowling Economy'},
+                    {name: 'Catches1', label: 'Catches Taken'},
+                    {name: 'Stumpings1', label: 'Stumpings'}
+                ],
+                'All-Rounder': [
+                    {name: 'Matches1', label: 'Matches Played', required: true},
+                    {name: 'Batting_Innings1', label: 'Innings Batted'},
+                    {name: 'Not_Outs1', label: 'Not Outs'},
+                    {name: 'Runs_Scored1', label: 'Total Runs Scored'},
+                    {name: 'Batting_Average1', label: 'Batting Average'},
+                    {name: 'Strike_Rate1', label: 'Batting Strike Rate'},
+                    {name: '100_1', label: 'Number of Centuries'},
+                    {name: '50_1', label: 'Number of Fifties'},
+                    {name: 'Wickets_Taken1', label: 'Wickets Taken'},
+                    {name: 'Bowling_Average1', label: 'Bowling Average'},
+                    {name: 'Economy1', label: 'Bowling Economy'},
+                    {name: 'Catches1', label: 'Catches Taken'},
+                    {name: 'Stumpings1', label: 'Stumpings'}
+                ],
+                'Fielder': [
+                    {name: 'Matches1', label: 'Matches Played', required: true},
+                    {name: 'Catches1', label: 'Catches Taken'},
+                    {name: 'Stumpings1', label: 'Stumpings'}
+                ]
+            };
+            const playerFields2 = {
+                'Batsman': playerFields['Batsman'].map(f => ({...f, name: f.name.replace('1', '2')})),
+                'Bowler': playerFields['Bowler'].map(f => ({...f, name: f.name.replace('1', '2')})),
+                'All-Rounder': playerFields['All-Rounder'].map(f => ({...f, name: f.name.replace('1', '2')})),
+                'Fielder': playerFields['Fielder'].map(f => ({...f, name: f.name.replace('1', '2')}))
+            };
+            function renderFields(type, container, fields) {
+                container.innerHTML = '';
+                fields[type].forEach(field => {
+                    container.innerHTML += `<input type="number" name="${field.name}" placeholder="${field.label}" ${field.required ? 'required' : ''}>`;
+                });
+            }
+            const playerType1 = document.getElementById('PlayerType1');
+            const playerType2 = document.getElementById('PlayerType2');
+            const player1FieldsDiv = document.getElementById('Player1Fields');
+            const player2FieldsDiv = document.getElementById('Player2Fields');
+            playerType1.addEventListener('change', () => {
+                renderFields(playerType1.value, player1FieldsDiv, playerFields);
+            });
+            playerType2.addEventListener('change', () => {
+                renderFields(playerType2.value, player2FieldsDiv, playerFields2);
+            });
+            // Initial render
+            renderFields(playerType1.value, player1FieldsDiv, playerFields);
+            renderFields(playerType2.value, player2FieldsDiv, playerFields2);
+            </script>
+            <button type="submit">Compare Players</button>
+        </form>
+        <div id="comparisonResult" style="display:none;">
+            <h2 class="result-title">Comparison Result</h2>
+            <table class="summary-table" id="summaryTable"></table>
+            <div class="result-cards">
+                <div class="player-card" id="player1Result"></div>
+                <div class="player-card" id="player2Result"></div>
+            </div>
+            <div class="chart-container">
+                <canvas id="compareChart" width="600" height="300"></canvas>
+            </div>
+            <div id="winnerBanner" class="winner-banner" style="display:none;"></div>
+        </div>
+        <a href="/">Back to Main Page</a>
+    </div>
+    <script src="/static/compare.js"></script>
+</body>
+</html>

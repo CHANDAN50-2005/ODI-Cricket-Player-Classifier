@@ -1,0 +1,45 @@
+# Python files
+*.py[cod]
+__pycache__/
+*.pyo
+*.pyd
+
+# Package directories
+venv/
+.env
+env/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Logs and local files
+*.log
+*.pot
+*.po
+
+# Build files
+build/
+dist/
+*.egg-info/
+
+# Byte-compiled / generated files
+*.pyc
+
+# Temporary files
+*.swp
+*~
+
+# Model artifacts - keep only if you do not want to version large files
+# cricket_model.joblib
+# scaler.joblib
+# model_columns.joblib
