@@ -3,11 +3,15 @@
 __pycache__/
 *.pyo
 *.pyd
+*.pyc
 
-# Package directories
+# Virtual environment
 venv/
-.env
+.venv/
 env/
+
+# Local environment files
+.env
 
 # IDE / Editor
 .vscode/
@@ -19,27 +23,20 @@ env/
 .DS_Store
 Thumbs.db
 
-# Jupyter Notebook checkpoints
+# Notebook and dataset files
 .ipynb_checkpoints/
+*.ipynb
+*.csv
 
-# Logs and local files
+# Analysis output and charts
+top_10_*.png
+
+# Logs and local build files
 *.log
-*.pot
-*.po
-
-# Build files
 build/
 dist/
 *.egg-info/
 
-# Byte-compiled / generated files
-*.pyc
-
 # Temporary files
 *.swp
 *~
-
-# Model artifacts - keep only if you do not want to version large files
-# cricket_model.joblib
-# scaler.joblib
-# model_columns.joblib
